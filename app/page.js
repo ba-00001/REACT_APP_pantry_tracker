@@ -2,13 +2,16 @@
 import Image from "next/image";
 import {useState, useEffect} from 'react'
 import { firestore } from "@/firebase";
-import { Box, Button, Modal, Stack, TextField, Typography } from "@mui/material";
-import { collection, deleteDoc, doc, getDocs, query, setDoc, getDoc} from "firebase/firestore";
+import { Box, Button, Modal, Stack, TextField, Typography, Card, CardContent, IconButton, Tooltip } from "@mui/material";
+import { collection, deleteDoc, doc, getDocs, query, setDoc, getDoc } from "firebase/firestore";
+import SearchIcon from '@mui/icons-material/Search';
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function Home() {
   const[inventory, setInventory] = useState([])
   const[open, setOpen] = useState(false)
   const[itemName, setItemName] = useState('')
+  const[searchTerm, setSearchTerm] = useState('')
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'))
@@ -22,7 +25,6 @@ export default function Home() {
     })
     setInventory(inventoryList)
     console.log(inventoryList)
-
   }
 
   const addItem = async (item) => {
@@ -57,13 +59,17 @@ export default function Home() {
     await updateInventory()
   }
 
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value)
+  }
+
   useEffect(()=>{
     updateInventory()
   }, [])
 
   const handleOpen = () => setOpen(true)
   const handleClose = () => setOpen(false)
- 
+
   return (
     <Box 
       width="100vw" 
@@ -73,6 +79,7 @@ export default function Home() {
       justifyContent="center" 
       alignItems="center" 
       gap={2}
+      padding={4}
     >
       <Modal open={open} onClose={handleClose}>
         <Box
@@ -81,7 +88,7 @@ export default function Home() {
           left="50%"
           width={400}
           bgcolor="white"
-          border="2px solid #000"
+          borderRadius={2}
           boxShadow={24}
           p={4}
           display="flex"
@@ -100,9 +107,10 @@ export default function Home() {
               onChange={(e) => {
                 setItemName(e.target.value)
               }}
+              placeholder="Enter item name"
             />
             <Button
-              variant="outlined"
+              variant="contained"
               onClick={() => {
                 addItem(itemName)
                 setItemName('')
@@ -114,71 +122,64 @@ export default function Home() {
           </Stack>
         </Box>
       </Modal>
-      <Button 
-        variant="contained" 
-        onClick={()=> {
-          handleOpen()
-        }}
-      >
-        Add New Item
-      </Button>
-      <Box border="1px solid #333">
-        <Box
-          width="800px"
-          height="100px"
-          bgcolor="#ADD8E6"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Typography variant="h2" color="#333">
-            Inventory Items
-          </Typography>
-        </Box>
-        <Stack width="800px" height="300px" spacing={2} overflow="auto">
-          {
-            inventory.map(({name, quantity}) => (
-              <Box 
-                key={name} 
-                width="100%" 
-                minHeight="150px" 
-                display="flex" 
-                alignItems="center" 
-                justifyContent="space-between"
-                bgcolor= "#f0f0f0"
-                padding={5}
-              >
-                <Typography variant="h3" color="#333" textAlign="center">
-                  {name.charAt(0).toUpperCase() + name.slice(1)}
-                </Typography>
-                <Typography variant="h3" color="#333" textAlign="center">
-                  {quantity}
-                </Typography>
-                <Stack direction="row" spacing={2}>
-                  <Button 
-                    variant="contained" 
-                    onClick={() => {
-                      addItem(name)
-                    }}
-                  >
-                    Add
-                  </Button>
-                  <Button 
-                    variant="contained" 
-                    onClick={() => {
-                      removeItem(name)
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </Stack>
-              </Box>
-            ))
-          }
 
-        </Stack>
+      <Box width="800px" display="flex" justifyContent="space-between" mb={2}>
+        <TextField
+          variant="outlined"
+          fullWidth
+          placeholder="Search items"
+          value={searchTerm}
+          onChange={handleSearch}
+          InputProps={{
+            endAdornment: (
+              <IconButton>
+                <SearchIcon />
+              </IconButton>
+            ),
+          }}
+        />
+        <Button variant="contained" onClick={handleOpen}>
+          Add New Item
+        </Button>
       </Box>
 
+      <Typography variant="h4" mb={2}>Inventory Items</Typography>
+
+      <Box border="1px solid #333" borderRadius={2} width="800px" p={2} bgcolor="#ffffff">
+        <Stack spacing={2} overflow="auto">
+          {
+            inventory
+              .filter(({name}) => name.toLowerCase().includes(searchTerm.toLowerCase()))
+              .map(({name, quantity}) => (
+                <Card key={name} variant="outlined">
+                  <CardContent display="flex" flexDirection="row" alignItems="center" justifyContent="space-between">
+                    <Box display="flex" flexDirection="column">
+                      <Typography variant="h5" color="#333">
+                        {name.charAt(0).toUpperCase() + name.slice(1)}
+                      </Typography>
+                      <Typography variant="body2" color="textSecondary">
+                        Quantity: {quantity}
+                      </Typography>
+                    </Box>
+                    <Stack direction="row" spacing={2}>
+                      <Tooltip title="Add">
+                        <Button variant="contained" onClick={() => addItem(name)}>Add</Button>
+                      </Tooltip>
+                      <Tooltip title="Remove">
+                        <Button variant="contained" onClick={() => removeItem(name)}>Remove</Button>
+                      </Tooltip>
+                      <Tooltip title="Edit">
+                        <IconButton>
+                          <EditIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              ))
+          }
+        </Stack>
+      </Box>
     </Box>
   )
 }
