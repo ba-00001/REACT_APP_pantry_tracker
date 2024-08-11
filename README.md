@@ -1,10 +1,25 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+
+# Pantry Tracker
+
+This project is a pantry inventory management application built with [Next.js](https://nextjs.org/) and Firebase. It allows users to add, remove, search, and manage items in their pantry. The app is built using Material-UI components for the UI and Firebase Firestore for data storage.
+
+## Features
+
+- **Add Items:** Add new items to your pantry inventory.
+- **Remove Items:** Remove or decrease the quantity of items in your inventory.
+- **Search Functionality:** Search for items by name.
+- **Real-time Updates:** Automatically updates the inventory list as changes are made.
+- **Modal for Adding Items:** A modal dialog to facilitate adding new items.
+- **Edit Option (Placeholder):** A placeholder for editing items (feature not yet implemented).
 
 ## Getting Started
-
-First, run the development server:
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+First, clone the repository and install the dependencies:
 
 ```bash
+git clone [https://github.com/yourusername/pantry-tracker.git](https://github.com/ba-00001/REACT_APP_pantry_tracker)
+cd pantry-tracker
+npm install
 npm run dev
 # or
 yarn dev
@@ -13,6 +28,7 @@ pnpm dev
 # or
 bun dev
 ```
+
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
