@@ -7,6 +7,7 @@ import { collection, deleteDoc, doc, getDocs, query, setDoc, getDoc } from "fire
 import SearchIcon from '@mui/icons-material/Search';
 import EditIcon from '@mui/icons-material/Edit';
 
+
 export default function Home() {
   const[inventory, setInventory] = useState([])
   const[open, setOpen] = useState(false)
